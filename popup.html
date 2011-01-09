@@ -1,0 +1,90 @@
+<style>
+body {
+    background-color: #222222;
+    color: #E1E1E1;
+    font-family: verdana;
+    font-size: 11px;
+}
+
+#screenshot {
+    border: 2px solid black;
+    max-width: 640px;
+    max-height: 480px;
+}
+
+</style>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.Jcrop.min.js"></script>
+<script>
+
+    var app_location = "http://localhost/visualmarks/";
+
+    var img_data;
+    var crop_data;
+    var url;
+
+    function takeScreenshot()
+    {
+        chrome.tabs.captureVisibleTab(null, {"format": "png"}, onScreenCapture );
+        
+        chrome.tabs.getSelected(null, function(tab){
+            var tag = document.getElementById("url");
+            tag.innerHTML = tab.url;
+            
+            url = tab.url;
+        });
+    }
+    
+    function onScreenCapture(screenshotUrl)
+    {
+        img_data = screenshotUrl;
+        
+        var img = document.getElementById("screenshot");
+        img.setAttribute("src", img_data);
+        
+        $('#screenshot').Jcrop();
+    }
+    
+    function onSubmit()
+    {
+        var post_url = app_location + "submit/chrome";
+            
+        var data = new Object();
+        data.img_data = img_data;
+        data.crop_data = "";
+        data.url = url;
+        
+        $.post(post_url, data, onSubmitComplete);
+    }
+    
+    function onSubmitComplete(result)
+    {
+        var result_location = app_location;
+        chrome.tabs.create({ "url": result_location},onResultShowed);
+        
+        window.close();
+    }
+    
+    function onResultShowed(tab)
+    {
+        
+    }
+    
+    takeScreenshot();
+    
+</script>
+
+<body>
+  <div>
+    <img id="screenshot" src="white.png">
+  </div>
+  <br />
+  <div>
+    <form>
+      <div>url: <span id="url"></span></div>
+      <br />
+      <div>tags: <input type="text" style="width: 500px; padding: 4px;"/> <input type="button" onclick="onSubmit();" value="verzenden" /></div>
+    </form>
+  </div>
+</body>

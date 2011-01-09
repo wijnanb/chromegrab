@@ -1,0 +1,13 @@
+{
+  "name": "ChromeGrab",
+  "version": "1.0",
+  "description": "Grab a screenshot of current tab",
+  "browser_action": {
+    "default_icon": "lavagraphics-icon.png",
+    "popup": "popup.html"
+  },
+  "permissions": [
+    "tabs",
+    "http://localhost/"
+  ]
+}
