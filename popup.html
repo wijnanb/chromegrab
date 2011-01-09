@@ -21,7 +21,7 @@ body {
     var app_location = "http://localhost/visualmarks/";
 
     var img_data;
-    var crop_data;
+    var crop_data = "";
     var url;
 
     function takeScreenshot()
@@ -43,7 +43,10 @@ body {
         var img = document.getElementById("screenshot");
         img.setAttribute("src", img_data);
         
-        $('#screenshot').Jcrop();
+        $('#screenshot').Jcrop({
+            onSelect: updateCropData,
+            onChange: updateCropData
+        });
     }
     
     function onSubmit()
@@ -52,7 +55,7 @@ body {
             
         var data = new Object();
         data.img_data = img_data;
-        data.crop_data = "";
+        data.crop_data = crop_data;
         data.url = url;
         
         $.post(post_url, data, onSubmitComplete);
@@ -60,8 +63,9 @@ body {
     
     function onSubmitComplete(result)
     {
-        var result_location = app_location;
-        chrome.tabs.create({ "url": result_location},onResultShowed);
+        // open tab with app.
+        //var result_location = app_location;
+        //chrome.tabs.create({ "url": result_location},onResultShowed);
         
         window.close();
     }
@@ -71,6 +75,10 @@ body {
         
     }
     
+    function updateCropData(coord)
+    {
+        crop_data = coord.x + "," + coord.y + "," + coord.x2 + "," + coord.y2;
+    }
     takeScreenshot();
     
 </script>
